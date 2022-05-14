@@ -8,12 +8,14 @@ import (
 )
 
 func main() {
-	log.Println("Launching YetAnotherControlPanel...")
-
 	log.Println("Initializing config...")
-	err := others.InitConfig()
+	err := others.InitEnv()
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
+	}
+	err = others.InitConfig()
+	if err != nil {
+		log.Panicln(err)
 	}
 
 	log.Println("Starting server...")

@@ -28,7 +28,4 @@ func main() {
 
 	log.Println("Starting server...")
 	server.StartServer()
-
-	// keep goroutine alive
-	select {}
 }

@@ -41,6 +41,11 @@ func limitLoginAndEntrance(conf *others.Config) gin.HandlerFunc {
 		}
 
 		if !others.CheckSession(session) {
+			if session != "" {
+				// session token is invalid, remove it
+				c.SetCookie("session", "", -1, "/", "", false, true)
+			}
+
 			if len(c.Request.URL.Path) < 1 || !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) {
 				c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
 				c.Abort()

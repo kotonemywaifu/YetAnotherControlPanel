@@ -75,6 +75,10 @@ func FindAccountHash(hash string) *Account {
 }
 
 func CheckSession(session string) bool {
+	if len(session) != SESSION_TOKEN_LENGTH {
+		return false
+	}
+
 	for i := 0; i < len(accounts); i++ {
 		if accounts[i].Session == session {
 			return true

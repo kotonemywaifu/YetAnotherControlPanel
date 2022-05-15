@@ -1,9 +1,15 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
@@ -44,14 +50,45 @@ func StartServer() {
 		ctx.String(http.StatusNotFound, "404 Not Found")
 	})
 
+	serveByRouter(router)
+}
+
+func serveByRouter(router *gin.Engine) {
+	srv := &http.Server{
+		Addr:    ":" + strconv.Itoa(others.TheConfig.Port),
+		Handler: router,
+	}
+
 	go func() {
-		err := router.Run(":" + strconv.Itoa(others.TheConfig.Port))
-		if err != nil {
-			panic(err)
+		err := srv.ListenAndServe()
+
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Panicln(err)
 		}
 	}()
 
 	log.Println("Server started on port", others.TheConfig.Port)
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	// kill (no param) default send syscall.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall.SIGKILL but can't be caught, so don't need to add it
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	// The context is used to inform the server it has 5 seconds to finish
+	// the request it is currently handling
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
+
+	os.Exit(0)
 }
 
 func setupApi(group *gin.RouterGroup, cfg *others.Config) {

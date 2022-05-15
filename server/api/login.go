@@ -1,15 +1,21 @@
 package api
 
 import (
+	"log"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
-	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
 
 func Login(group *gin.RouterGroup, cfg *others.Config) {
 	group.POST("/login", func(c *gin.Context) {
-		entrance := c.PostForm("entrance")
-		if entrance != cfg.SecuredEntrance {
+		referer := c.Request.Referer()
+		idx := strings.LastIndex(referer, "?")
+		if idx > 0 {
+			referer = referer[:idx]
+		}
+		if !strings.HasSuffix(referer, cfg.SecuredEntrance) {
 			c.JSON(200, gin.H{
 				"status": "error",
 				"msg":    "invalid secured entrance",
@@ -17,19 +23,29 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 			return
 		}
 
-		passwd := c.PostForm("password") // md5 encrypted password
-		if len(passwd) != 32 || passwd != util.GetMD5Hash(cfg.Password) {
+		accountHash := c.PostForm("account") // md5 encrypted (username+password)
+		if len(accountHash) != 32 {
 			c.JSON(200, gin.H{
 				"status": "error",
-				"msg":    "invalid password",
+				"msg":    "invalid account hash",
+			})
+			return
+		}
+		account := others.FindAccountHash(accountHash)
+		if account == nil {
+			c.JSON(200, gin.H{
+				"status": "error",
+				"msg":    "invalid username or password",
 			})
 			return
 		}
 
 		// correct password, set session cookie
-		c.SetCookie("session", cfg.Session, 3600, "/", "", false, true)
+		account.UpdateSession()
+		c.SetCookie("session", account.Session, 3600, "/", "", false, true)
 		c.JSON(200, gin.H{
 			"status": "ok",
 		})
+		log.Println("Login success (User=" + account.Username + ", IP=" + c.ClientIP() + ", UA=" + c.Request.UserAgent() + ")")
 	})
 }

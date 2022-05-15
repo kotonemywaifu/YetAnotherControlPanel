@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -19,7 +18,6 @@ func limitHosts(hosts *[]string) gin.HandlerFunc {
 			if idx > 0 {
 				host = c.Request.Host[:idx]
 			}
-			fmt.Println(host)
 			if !slices.Contains(*hosts, host) {
 				c.AbortWithStatus(http.StatusForbidden)
 			}
@@ -42,7 +40,7 @@ func limitLoginAndEntrance(conf *others.Config) gin.HandlerFunc {
 			session = cookie.Value
 		}
 
-		if session != conf.Session {
+		if !others.CheckSession(session) {
 			if len(c.Request.URL.Path) < 1 || !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) {
 				c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
 				c.Abort()

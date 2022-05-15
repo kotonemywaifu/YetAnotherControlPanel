@@ -8,12 +8,20 @@ import (
 )
 
 func main() {
-	log.Println("Initializing config...")
 	err := others.InitEnv()
 	if err != nil {
 		log.Panicln(err)
 	}
+	log.Println("Initializing config...")
 	err = others.InitConfig()
+	if err != nil {
+		log.Panicln(err)
+	}
+	err = others.InitAccounts()
+	if err != nil {
+		log.Panicln(err)
+	}
+	err = others.SetupLogger()
 	if err != nil {
 		log.Panicln(err)
 	}

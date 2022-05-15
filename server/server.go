@@ -33,7 +33,7 @@ func StartServer() {
 	if others.TheConfig.SecuredEntrance == "" {
 		log.Println("Secured entrance is disabled, this may be a security risk.")
 	} else {
-		log.Println("Secured entrance is enabled, you can only login from the secured entrance: /", others.TheConfig.SecuredEntrance)
+		log.Println("Secured entrance is enabled, you can only login from the secured entrance: /" + others.TheConfig.SecuredEntrance)
 	}
 	router.Use(limitLoginAndEntrance(others.TheConfig))
 

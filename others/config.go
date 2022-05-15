@@ -2,21 +2,20 @@ package others
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
-
-	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
 
 type Config struct {
 	Port            int       `json:"port"`
-	Password        string    `json:"password"`
 	TrustedHosts    []string  `json:"trusted-hosts"`
+	Log             bool      `json:"log"`
 	SecuredEntrance string    `json:"secured-entrance"` // this can make users get away from password brute force attack
-	Session         string    `json:"session"`          // login token in cookie
 	Gin             ConfigGin `json:"gin"`
 }
 
@@ -27,17 +26,14 @@ type ConfigGin struct {
 var configDir string
 var TheConfig *Config
 
-var SESSION_TOKEN_LENGTH = 128
-
 func makeConfig() *Config {
 	conf := new(Config)
 
 	// initialize values
 	conf.Port = 8080
-	conf.Password = util.RandStringRunes(10)
 	conf.TrustedHosts = []string{}
+	conf.Log = true
 	conf.SecuredEntrance = "" /* util.randomString(8) */
-	conf.Session = util.RandStringRunes(SESSION_TOKEN_LENGTH)
 
 	conf.Gin.DebugMode = false
 
@@ -48,12 +44,7 @@ func InitEnv() error {
 	// random in golang seed is not random, so we need to use time.Now()
 	rand.Seed(time.Now().UnixNano())
 
-	return nil
-}
-
-func InitConfig() error {
-	TheConfig = makeConfig()
-
+	// create directory if not exists
 	osConfig, err := os.UserConfigDir()
 	if err != nil {
 		return err
@@ -67,6 +58,22 @@ func InitConfig() error {
 			return err
 		}
 	}
+
+	subdirs := []string{"logs"}
+	for _, subdir := range subdirs {
+		if _, err := os.Stat(configDir + subdir); os.IsNotExist(err) {
+			err := os.MkdirAll(configDir+subdir, os.ModePerm)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func InitConfig() error {
+	TheConfig = makeConfig()
 
 	return readConfigJson()
 }
@@ -108,6 +115,22 @@ func writeConfigJson() error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func SetupLogger() error {
+	if !TheConfig.Log {
+		return nil
+	}
+
+	// bind log file
+	f, err := os.OpenFile(configDir+"logs/"+strconv.FormatInt(time.Now().Unix(), 10)+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	wrt := io.MultiWriter(os.Stderr, f)
+	log.SetOutput(wrt)
 
 	return nil
 }

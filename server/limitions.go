@@ -50,6 +50,11 @@ func limitLoginAndEntrance(conf *others.Config) gin.HandlerFunc {
 				c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
 				c.Abort()
 			}
+		} else {
+			if c.Request.URL.Path == "/" || c.Request.URL.Path == "//" {
+				c.Redirect(http.StatusFound, "/index")
+				c.Abort()
+			}
 		}
 	}
 }

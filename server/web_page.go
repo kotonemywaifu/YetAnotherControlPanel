@@ -8,7 +8,7 @@ import (
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
 )
 
-//go:embed all:nextjs/dist
+//go:embed all:web/out
 var nextFS embed.FS
 
 type WrappedFileSystem struct {
@@ -39,6 +39,6 @@ func setupWebPages(router *gin.Engine) {
 	router.StaticFS("/", &WrappedFileSystem{
 		fs:     http.FS(nextFS),
 		config: others.TheConfig,
-		prefix: "nextjs/dist",
+		prefix: "web/out",
 	})
 }

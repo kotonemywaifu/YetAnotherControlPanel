@@ -2,12 +2,10 @@ package others
 
 import (
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -115,22 +113,6 @@ func writeConfigJson() error {
 	if err != nil {
 		return err
 	}
-
-	return nil
-}
-
-func SetupLogger() error {
-	if !TheConfig.Log {
-		return nil
-	}
-
-	// bind log file
-	f, err := os.OpenFile(configDir+"logs/"+strconv.FormatInt(time.Now().Unix(), 10)+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		return err
-	}
-	wrt := io.MultiWriter(os.Stderr, f)
-	log.SetOutput(wrt)
 
 	return nil
 }

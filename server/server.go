@@ -43,6 +43,7 @@ func StartServer() {
 	}
 	router.Use(limitLoginAndEntrance(others.TheConfig))
 
+	setupWebPages(router)
 	api := router.Group("/api")
 	setupApi(api, others.TheConfig)
 
@@ -77,7 +78,7 @@ func serveByRouter(router *gin.Engine) {
 	// kill -9 is syscall.SIGKILL but can't be caught, so don't need to add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	log.Println("\rShutting down server...")
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling

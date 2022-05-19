@@ -61,7 +61,13 @@ func serveByRouter(router *gin.Engine) {
 	}
 
 	go func() {
-		err := srv.ListenAndServe()
+		var err error
+		if others.TheConfig.Gin.Tls.Enabled {
+			srv.ListenAndServeTLS(others.TheConfig.Gin.Tls.CertFile, others.TheConfig.Gin.Tls.KeyFile)
+		} else {
+			log.Println("You are running in non-secure mode, please consider using TLS.")
+			err = srv.ListenAndServe()
+		}
 
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Panicln(err)

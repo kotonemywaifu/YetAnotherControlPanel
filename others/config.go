@@ -6,19 +6,23 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
 type Config struct {
-	Port            int       `json:"port"`
-	TrustedHosts    []string  `json:"trusted-hosts"`
-	Log             bool      `json:"log"`
-	SecuredEntrance string    `json:"secured-entrance"` // this can make users get away from password brute force attack
-	Gin             ConfigGin `json:"gin"`
-}
-
-type ConfigGin struct {
-	DebugMode bool `json:"debug-mode"`
+	Port            int      `json:"port"`
+	TrustedHosts    []string `json:"trusted-hosts"`
+	Log             bool     `json:"log"`
+	SecuredEntrance string   `json:"secured-entrance"` // this can make users get away from password brute force attack
+	Gin             struct {
+		DebugMode bool `json:"debug-mode"`
+		Tls       struct {
+			Enabled  bool   `json:"enabled"`
+			CertFile string `json:"cert"`
+			KeyFile  string `json:"key"`
+		} `json:"tls"`
+	} `json:"gin"`
 }
 
 var configDir string
@@ -34,9 +38,16 @@ func makeConfig() *Config {
 	conf.SecuredEntrance = "" /* util.randomString(8) */
 
 	conf.Gin.DebugMode = false
+	conf.Gin.Tls.Enabled = false
+	conf.Gin.Tls.CertFile = ""
+	conf.Gin.Tls.KeyFile = ""
 
 	return conf
 }
+
+// func firstRun() error {
+
+// }
 
 func InitEnv() error {
 	// random in golang seed is not random, so we need to use time.Now()
@@ -50,17 +61,23 @@ func InitEnv() error {
 	configDir = osConfig + "/yacp/"
 
 	// create config dir if not exists
-	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		err := os.MkdirAll(configDir, os.ModePerm)
+	if _, err = os.Stat(configDir); os.IsNotExist(err) {
+		err = os.MkdirAll(configDir, os.ModePerm)
 		if err != nil {
 			return err
 		}
+		// if yacp dir not exists, this is the first time to run yacp
+		// we need to initialize something
+		// err = firstRun()
+		// if err != nil {
+		// 	return err
+		// }
 	}
 
 	subdirs := []string{"logs"}
 	for _, subdir := range subdirs {
-		if _, err := os.Stat(configDir + subdir); os.IsNotExist(err) {
-			err := os.MkdirAll(configDir+subdir, os.ModePerm)
+		if _, err = os.Stat(configDir + subdir); os.IsNotExist(err) {
+			err = os.MkdirAll(configDir+subdir, os.ModePerm)
 			if err != nil {
 				return err
 			}
@@ -97,6 +114,9 @@ func readConfigJson() error {
 	if err != nil {
 		return err
 	}
+
+	TheConfig.Gin.Tls.CertFile = strings.ReplaceAll(TheConfig.Gin.Tls.CertFile, "!config-dir!", configDir[:len(configDir)-1])
+	TheConfig.Gin.Tls.KeyFile = strings.ReplaceAll(TheConfig.Gin.Tls.KeyFile, "!config-dir!", configDir[:len(configDir)-1])
 
 	return writeConfigJson() // re-save config file to ensure data integrity
 }

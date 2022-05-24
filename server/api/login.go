@@ -3,9 +3,11 @@ package api
 import (
 	"log"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
+	"github.com/liulihaocai/YetAnotherControlPanel/task"
 )
 
 func Login(group *gin.RouterGroup, cfg *others.Config) {
@@ -23,12 +25,21 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 			return
 		}
 
+		if !ableToLogin(c.ClientIP()) {
+			c.JSON(200, gin.H{
+				"status": "error",
+				"msg":    "failed to login too many times, please try again later",
+			})
+			return
+		}
+
 		accountHash := c.PostForm("account") // md5 encrypted (username+password)
 		if len(accountHash) != 32 {
 			c.JSON(200, gin.H{
 				"status": "error",
 				"msg":    "invalid account hash",
 			})
+			failedIp(c.ClientIP())
 			return
 		}
 		account := others.FindAccountHash(accountHash)
@@ -37,6 +48,7 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 				"status": "error",
 				"msg":    "invalid username or password",
 			})
+			failedIp(c.ClientIP())
 			return
 		}
 
@@ -48,4 +60,53 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 		})
 		log.Println("Login success (User=" + account.Username + ", IP=" + c.ClientIP() + ", UA=" + c.Request.UserAgent() + ")")
 	})
+
+	// add a task to process fail to ban
+	task.AddTask(&task.Task{
+		Name:      "panel-login-failToBan",
+		NeedTicks: 5,
+		Func:      failToBanTicker,
+	})
+}
+
+var failures map[string]*LoginFailure = make(map[string]*LoginFailure)
+
+func failToBanTicker() {
+	now := time.Now()
+	duration := time.Duration(others.TheConfig.FailToBan.BanTime) * time.Second
+	for ip, failure := range failures {
+		if now.Sub(failure.Time) > duration {
+			failure.Time = now
+			failure.Count--
+		}
+		if failure.Count <= 0 {
+			delete(failures, ip)
+		}
+	}
+}
+
+func failedIp(ip string) {
+	failure := failures[ip]
+	if failure == nil {
+		failure = &LoginFailure{
+			Time:  time.Now(),
+			Count: 1,
+		}
+		failures[ip] = failure
+	} else {
+		failure.Count++
+	}
+}
+
+func ableToLogin(ip string) bool {
+	failure := failures[ip]
+	if failure == nil {
+		return true
+	}
+	return failure.Count <= others.TheConfig.FailToBan.Failures
+}
+
+type LoginFailure struct {
+	Count int
+	Time  time.Time
 }

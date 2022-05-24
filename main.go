@@ -5,6 +5,7 @@ import (
 
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
 	"github.com/liulihaocai/YetAnotherControlPanel/server"
+	"github.com/liulihaocai/YetAnotherControlPanel/task"
 )
 
 func main() {
@@ -25,6 +26,8 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+
+	go task.StartTicking()
 
 	log.Println("Starting server...")
 	server.StartServer()

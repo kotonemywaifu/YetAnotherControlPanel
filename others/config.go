@@ -15,7 +15,12 @@ type Config struct {
 	TrustedHosts    []string `json:"trusted-hosts"`
 	Log             bool     `json:"log"`
 	SecuredEntrance string   `json:"secured-entrance"` // this can make users get away from password brute force attack
-	Gin             struct {
+	FailToBan       struct {
+		Enabled  bool `json:"enabled"`
+		Failures int  `json:"failures"`
+		BanTime  int  `json:"ban-time"` // in seconds
+	} `json:"fail-to-ban"` // ban user if failed to login for x times
+	Gin struct {
 		DebugMode bool `json:"debug-mode"`
 		Tls       struct {
 			Enabled  bool   `json:"enabled"`
@@ -36,6 +41,10 @@ func makeConfig() *Config {
 	conf.TrustedHosts = []string{}
 	conf.Log = true
 	conf.SecuredEntrance = "" /* util.randomString(8) */
+
+	conf.FailToBan.Enabled = true
+	conf.FailToBan.Failures = 5
+	conf.FailToBan.BanTime = 180
 
 	conf.Gin.DebugMode = false
 	conf.Gin.Tls.Enabled = false

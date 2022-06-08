@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
 
@@ -16,11 +17,14 @@ type Library struct {
 	Version     string
 	DownloadUrl string
 	VerifyMd5   string
+	File        string // generated dynamically
 }
 
 var LibraryDir string
 
-func InitializeLibraries() error {
+var libraryHeader string
+
+func InitializeLibraries(r *gin.Engine) error {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return err
@@ -50,26 +54,41 @@ func InitializeLibraries() error {
 		DownloadUrl: "https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js",
 		VerifyMd5:   "8fb8fee4fcc3cc86ff6c724154c49c42",
 	}
+	libraryRegistry["tailwindcss"] = &Library{
+		Name:        "tailwindcss",
+		Type:        "css",
+		Version:     "2.2",
+		DownloadUrl: "https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css",
+		VerifyMd5:   "e35af4d8ceb624072098fa9a3d970aaa",
+	}
 
 	// download libraries
 	for _, library := range libraryRegistry {
+		libn := library.Name + "-" + library.Version + "." + library.Type
+		library.File = LibraryDir + "/" + libn
 		err = PrepareLibrary(library)
 		if err != nil {
 			return errors.New("failed to download library " + library.Name + " :" + err.Error())
 		}
+		if library.Type == "js" {
+			libraryHeader += "<script src=\"/assets/" + libn + "\"></script>\n"
+		} else if library.Type == "css" {
+			libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/" + libn + "\"></link>\n"
+		}
 	}
+
+	// add routes
+	r.Static("/assets", LibraryDir)
 
 	return nil
 }
 
 func PrepareLibrary(library *Library) error {
-	libraryFile := LibraryDir + "/" + library.Name + "-" + library.Version + "." + library.Type
-
 	// download library if not exists
 	isFreshDownload := false
-	if _, err := os.Stat(libraryFile); os.IsNotExist(err) {
-		log.Println("Downloading library " + library.Name + " to " + libraryFile)
-		err := util.DownloadFile(library.DownloadUrl, libraryFile)
+	if _, err := os.Stat(library.File); os.IsNotExist(err) {
+		log.Println("Downloading library " + library.Name + " to " + library.File)
+		err := util.DownloadFile(library.DownloadUrl, library.File)
 		if err != nil {
 			return err
 		}
@@ -78,7 +97,7 @@ func PrepareLibrary(library *Library) error {
 
 	// verify md5
 	if library.VerifyMd5 != "" {
-		verified, err := util.VerifyMd5(libraryFile, library.VerifyMd5)
+		verified, err := util.VerifyMd5(library.File, library.VerifyMd5)
 		if err != nil {
 			return err
 		}
@@ -88,14 +107,27 @@ func PrepareLibrary(library *Library) error {
 			} else {
 				log.Println("md5 verification failed for library " + library.Name + ", downloading again")
 				// delete file and download again
-				err = os.Remove(libraryFile)
+				err = os.Remove(library.File)
 				if err != nil {
 					return err
 				}
-				return DownloadLibrary(library)
+				return PrepareLibrary(library)
 			}
 		}
 	}
 
 	return nil
+}
+
+/**
+ * Try push library through http 2
+ * @return library in html header
+ */
+func tryPushLibrary(c *gin.Context) string {
+	// resourcePushed := false
+	// if pusher := c.Writer.Pusher(); pusher != nil {
+	// 	if err := pusher.Push("", nil)
+	// }
+	// TODO: implement
+	return libraryHeader
 }

@@ -1,0 +1,10 @@
+{{define "content"}}
+{{.Basic.Title}}</br>
+{{.Basic.Locale.Api.Login.InvalidAccountCredentials}}
+<button onclick="login()">Login</button>
+<script>
+    let login = () => {
+        alert("Login");
+    };
+</script>
+{{end}}

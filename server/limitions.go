@@ -50,13 +50,14 @@ func limitLoginAndEntrance(r *gin.Engine, conf *others.Config) gin.HandlerFunc {
 				if c.Request.URL.Path == "/login" && c.Request.Header.Get("Secured-Entrance") == conf.SecuredEntrance {
 					// this is client side redirect to login page
 					return
-				} else if !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) {
+				} else if !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) && !strings.HasPrefix(c.Request.URL.Path, "/assets/") {
 					c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
 					c.Abort()
 				} else if c.Request.URL.Path[1:] == conf.SecuredEntrance {
 					// this is client side redirect to secured entrance page
 					c.Request.Header.Set("Secured-Entrance", c.Request.URL.Path[1:])
 					c.Request.URL.Path = "/login"
+					c.Status(200)
 					r.HandleContext(c)
 					c.Abort()
 					return

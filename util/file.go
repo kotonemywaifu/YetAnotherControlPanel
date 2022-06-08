@@ -4,6 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"io"
+	"io/fs"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -54,4 +56,25 @@ func VerifyMd5(file, md5Hash string) (bool, error) {
 
 	hash := hex.EncodeToString(h.Sum(nil))
 	return hash == md5Hash, nil
+}
+
+func ReadFile(fs fs.FS, file string) (string, error) {
+	f, err := fs.Open(file)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	result, err := ioutil.ReadAll(f)
+	if err != nil {
+		return "", err
+	}
+	return string(result), nil
+}
+
+func Must(str string, err error) string {
+	if err != nil {
+		panic(err)
+	}
+	return str
 }

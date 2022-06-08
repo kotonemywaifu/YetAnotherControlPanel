@@ -12,7 +12,7 @@ type Locale struct {
 		Login struct {
 			FailedTooManyTimes        string
 			InvalidAccountHash        string
-			InvalidUsernameOrPassword string
+			InvalidAccountCredentials string
 		}
 	}
 }
@@ -36,6 +36,8 @@ func loadLocale(lang string) *Locale {
 	switch lang {
 	case "en":
 		return loadEnglish()
+	case "zh":
+		return loadChinese()
 	default:
 		return GetLocale("en") // fallback to that pointer
 	}

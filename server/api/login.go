@@ -47,7 +47,7 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 		if account == nil {
 			c.JSON(200, gin.H{
 				"status": "error",
-				"msg":    locale.Api.Login.InvalidUsernameOrPassword,
+				"msg":    locale.Api.Login.InvalidAccountCredentials,
 			})
 			failedIp(c.ClientIP())
 			return

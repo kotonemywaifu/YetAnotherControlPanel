@@ -44,7 +44,10 @@ func StartServer() {
 	}
 	router.Use(limitLoginAndEntrance(router, others.TheConfig))
 
-	web.RegisterWebPages(router)
+	err := web.RegisterWebPages(router)
+	if err != nil {
+		log.Panicln("Failed to register web pages:", err)
+	}
 
 	api.RegisterApi(router.Group("/api"), others.TheConfig)
 

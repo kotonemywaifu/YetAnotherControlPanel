@@ -8,7 +8,7 @@ func loadEnglish() *Locale {
 	// api.login
 	locale.Api.Login.FailedTooManyTimes = "failed to login too many times, please try again later"
 	locale.Api.Login.InvalidAccountHash = "invalid account hash"
-	locale.Api.Login.InvalidUsernameOrPassword = "invalid username or password"
+	locale.Api.Login.InvalidAccountCredentials = "invalid account credentials"
 
 	return locale
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
 	"github.com/liulihaocai/YetAnotherControlPanel/server/api"
+	"github.com/liulihaocai/YetAnotherControlPanel/web"
 )
 
 var router *gin.Engine
@@ -41,15 +42,11 @@ func StartServer() {
 	} else {
 		log.Println("Secured entrance is enabled, you can only login from the secured entrance: /" + others.TheConfig.SecuredEntrance)
 	}
-	router.Use(limitLoginAndEntrance(others.TheConfig))
+	router.Use(limitLoginAndEntrance(router, others.TheConfig))
 
-	setupWebPages(router)
-	api := router.Group("/api")
-	setupApi(api, others.TheConfig)
+	web.RegisterWebPages(router)
 
-	router.NoRoute(func(ctx *gin.Context) {
-		ctx.String(http.StatusNotFound, "404 Not Found")
-	})
+	api.RegisterApi(router.Group("/api"), others.TheConfig)
 
 	serveByRouter(router)
 }
@@ -96,8 +93,4 @@ func serveByRouter(router *gin.Engine) {
 	}
 
 	os.Exit(0)
-}
-
-func setupApi(group *gin.RouterGroup, cfg *others.Config) {
-	api.Login(group, cfg)
 }

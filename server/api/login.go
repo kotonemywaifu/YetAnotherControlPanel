@@ -2,11 +2,13 @@ package api
 
 import (
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
+	"github.com/liulihaocai/YetAnotherControlPanel/panel/i18n"
 	"github.com/liulihaocai/YetAnotherControlPanel/task"
 )
 
@@ -18,17 +20,16 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 			referer = referer[:idx]
 		}
 		if !strings.HasSuffix(referer, cfg.SecuredEntrance) {
-			c.JSON(200, gin.H{
-				"status": "error",
-				"msg":    "invalid secured entrance",
-			})
+			c.AbortWithStatus(http.StatusUnauthorized) // prevent behavior recognition
 			return
 		}
+		// don't load locale if invalid secured entrance, used to get away from memory overflow attack
+		locale := i18n.ReadLocale(c)
 
 		if !ableToLogin(c.ClientIP()) {
 			c.JSON(200, gin.H{
 				"status": "error",
-				"msg":    "failed to login too many times, please try again later",
+				"msg":    locale.Api.Login.FailedTooManyTimes,
 			})
 			return
 		}
@@ -37,7 +38,7 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 		if len(accountHash) != 32 {
 			c.JSON(200, gin.H{
 				"status": "error",
-				"msg":    "invalid account hash",
+				"msg":    locale.Api.Login.InvalidAccountHash,
 			})
 			failedIp(c.ClientIP())
 			return
@@ -46,7 +47,7 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 		if account == nil {
 			c.JSON(200, gin.H{
 				"status": "error",
-				"msg":    "invalid username or password",
+				"msg":    locale.Api.Login.InvalidUsernameOrPassword,
 			})
 			failedIp(c.ClientIP())
 			return

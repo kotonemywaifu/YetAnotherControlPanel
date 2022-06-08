@@ -25,7 +25,7 @@ func limitHosts(hosts *[]string) gin.HandlerFunc {
 	}
 }
 
-func limitLoginAndEntrance(conf *others.Config) gin.HandlerFunc {
+func limitLoginAndEntrance(r *gin.Engine, conf *others.Config) gin.HandlerFunc {
 	apiLogin := "api/login"
 	allowedPageNotLogin := []*string{
 		&conf.SecuredEntrance,
@@ -46,13 +46,28 @@ func limitLoginAndEntrance(conf *others.Config) gin.HandlerFunc {
 				c.SetCookie("session", "", -1, "/", "", false, true)
 			}
 
-			if len(c.Request.URL.Path) < 1 || !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) {
+			if len(c.Request.URL.Path) > 1 {
+				if c.Request.URL.Path == "/login" && c.Request.Header.Get("Secured-Entrance") == conf.SecuredEntrance {
+					// this is client side redirect to login page
+					return
+				} else if !util.MatchPointerSlice(allowedPageNotLogin, c.Request.URL.Path[1:]) {
+					c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
+					c.Abort()
+				} else if c.Request.URL.Path[1:] == conf.SecuredEntrance {
+					// this is client side redirect to secured entrance page
+					c.Request.Header.Set("Secured-Entrance", c.Request.URL.Path[1:])
+					c.Request.URL.Path = "/login"
+					r.HandleContext(c)
+					c.Abort()
+					return
+				}
+			} else {
 				c.String(http.StatusUnauthorized, "401 Unauthorized, please login first.")
 				c.Abort()
 			}
 		} else {
 			if c.Request.URL.Path == "/" || c.Request.URL.Path == "//" {
-				c.Redirect(http.StatusFound, "/index")
+				c.Redirect(http.StatusFound, "/home")
 				c.Abort()
 			}
 		}

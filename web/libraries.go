@@ -63,6 +63,7 @@ func InitializeLibraries(r *gin.Engine) error {
 	}
 
 	// download libraries
+	libraryHeader = "<link rel=\"stylesheet\" href=\"/assets/theme.css\" />"
 	for _, library := range libraryRegistry {
 		libn := library.Name + "-" + library.Version + "." + library.Type
 		library.File = LibraryDir + "/" + libn
@@ -71,14 +72,14 @@ func InitializeLibraries(r *gin.Engine) error {
 			return errors.New("failed to download library " + library.Name + " :" + err.Error())
 		}
 		if library.Type == "js" {
-			libraryHeader += "<script src=\"/assets/" + libn + "\"></script>\n"
+			libraryHeader += "<script src=\"/assets/library/" + libn + "\"></script>"
 		} else if library.Type == "css" {
-			libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/" + libn + "\"></link>\n"
+			libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/library/" + libn + "\"/>"
 		}
 	}
 
 	// add routes
-	r.Static("/assets", LibraryDir)
+	r.Static("/assets/library", LibraryDir)
 
 	return nil
 }

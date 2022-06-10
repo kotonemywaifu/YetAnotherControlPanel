@@ -13,7 +13,7 @@ func SetupLogger() error {
 	}
 
 	// bind log file
-	f, err := os.OpenFile(configDir+"logs/"+time.Now().Format("20060201_15_04_05")+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(ConfigDir+"logs/"+time.Now().Format("20060201_15_04_05")+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		return err
 	}

@@ -32,7 +32,7 @@ func (a *Account) UpdateSession(userAgent string) {
 var accounts []Account
 
 func InitAccounts() error {
-	accountFile := configDir + "account.json"
+	accountFile := ConfigDir + "account.json"
 
 	// check file exists
 	if _, err := os.Stat(accountFile); os.IsNotExist(err) {
@@ -91,9 +91,9 @@ func CheckSession(session string, userAgent string) bool {
 }
 
 func SaveAccounts() error {
-	accountFile := configDir + "account.json"
+	accountFile := ConfigDir + "account.json"
 
-	file, err := json.MarshalIndent(accounts, "", " ")
+	file, err := json.MarshalIndent(accounts, "", "\t")
 	if err != nil {
 		return err
 	}

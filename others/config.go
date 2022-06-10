@@ -32,7 +32,7 @@ type Config struct {
 	} `json:"gin"`
 }
 
-var configDir string
+var ConfigDir string
 var TheConfig *Config
 
 func makeConfig() *Config {
@@ -71,11 +71,11 @@ func InitEnv() error {
 	if err != nil {
 		return err
 	}
-	configDir = osConfig + "/yacp/"
+	ConfigDir = osConfig + "/yacp/"
 
 	// create config dir if not exists
-	if _, err = os.Stat(configDir); os.IsNotExist(err) {
-		err = os.MkdirAll(configDir, os.ModePerm)
+	if _, err = os.Stat(ConfigDir); os.IsNotExist(err) {
+		err = os.MkdirAll(ConfigDir, os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -89,8 +89,8 @@ func InitEnv() error {
 
 	subdirs := []string{"logs"}
 	for _, subdir := range subdirs {
-		if _, err = os.Stat(configDir + subdir); os.IsNotExist(err) {
-			err = os.MkdirAll(configDir+subdir, os.ModePerm)
+		if _, err = os.Stat(ConfigDir + subdir); os.IsNotExist(err) {
+			err = os.MkdirAll(ConfigDir+subdir, os.ModePerm)
 			if err != nil {
 				return err
 			}
@@ -107,7 +107,7 @@ func InitConfig() error {
 }
 
 func readConfigJson() error {
-	configFile := configDir + "config.json"
+	configFile := ConfigDir + "config.json"
 
 	// create config file if not exists
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
@@ -128,16 +128,16 @@ func readConfigJson() error {
 		return err
 	}
 
-	TheConfig.Gin.Tls.CertFile = strings.ReplaceAll(TheConfig.Gin.Tls.CertFile, "!config-dir!", configDir[:len(configDir)-1])
-	TheConfig.Gin.Tls.KeyFile = strings.ReplaceAll(TheConfig.Gin.Tls.KeyFile, "!config-dir!", configDir[:len(configDir)-1])
+	TheConfig.Gin.Tls.CertFile = strings.ReplaceAll(TheConfig.Gin.Tls.CertFile, "!config-dir!", ConfigDir[:len(ConfigDir)-1])
+	TheConfig.Gin.Tls.KeyFile = strings.ReplaceAll(TheConfig.Gin.Tls.KeyFile, "!config-dir!", ConfigDir[:len(ConfigDir)-1])
 
 	return writeConfigJson() // re-save config file to ensure data integrity
 }
 
 func writeConfigJson() error {
-	configFile := configDir + "config.json"
+	configFile := ConfigDir + "config.json"
 
-	file, err := json.MarshalIndent(TheConfig, "", " ")
+	file, err := json.MarshalIndent(TheConfig, "", "\t")
 	if err != nil {
 		return err
 	}

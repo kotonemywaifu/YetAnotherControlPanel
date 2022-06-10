@@ -14,6 +14,10 @@ func RegisterWebPages(r *gin.Engine) error {
 	if err != nil {
 		return err
 	}
+	err = InitializeThemes(r)
+	if err != nil {
+		return err
+	}
 
 	setupFS()
 

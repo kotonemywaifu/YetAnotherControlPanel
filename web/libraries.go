@@ -63,7 +63,7 @@ func InitializeLibraries(r *gin.Engine) error {
 	}
 
 	// download libraries
-	libraryHeader = "<link rel=\"stylesheet\" href=\"/assets/theme.css\" />"
+	libraryHeader = ""
 	for _, library := range libraryRegistry {
 		libn := library.Name + "-" + library.Version + "." + library.Type
 		library.File = LibraryDir + "/" + libn
@@ -77,6 +77,7 @@ func InitializeLibraries(r *gin.Engine) error {
 			libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/library/" + libn + "\"/>"
 		}
 	}
+	libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/theme.css\" />"
 
 	// add routes
 	r.Static("/assets/library", LibraryDir)

@@ -1,0 +1,125 @@
+:root {
+    --p: {{.Primary}};
+    --pf: {{.PrimaryFocus}};
+    --pc: {{.PrimaryContent}};
+
+    --s: {{.Secondary}};
+    --sf: {{.SecondaryFocus}};
+    --sc: {{.SecondaryContent}};
+
+    --a: {{.Accent}};
+    --af: {{.AccentFocus}};
+    --ac: {{.AccentContent}};
+
+    --n: {{.Neutral}};
+    --nf: {{.NeutralFocus}};
+    --nc: {{.NeutralContent}};
+
+    --b1: {{.Base100}};
+    --b2: {{.Base200}};
+    --b3: {{.Base300}};
+    --bc: {{.BaseContent}};
+
+    --in: {{.Info}};
+    --su: {{.Success}};
+    --wa: {{.Warning}};
+    --er: {{.Error}};
+
+    --rounded-box: {{.RoundedBox}};
+    --rounded-btn: {{.RoundedButton}};
+    --rounded-badge: {{.RoundedBadge}};
+
+    --animation-btn: {{.AnimationButton}};
+    --animation-input: {{.AnimationInput}};
+
+    --padding-card: {{.PaddingCard}};
+
+    --btn-text-case: {{.ButtonTextCase}};
+    --navbar-padding: {{.NavbarPadding}};
+    --border-btn: {{.BorderButton}};
+
+    --focus-ring: {{.FocusRing}};
+    --focus-ring-offset: {{.FocusRingOffset}};
+}
+
+/* background color */
+
+.bg-primary {
+    background-color: hsl(var(--p));
+}
+
+.bg-primary-focus {
+    background-color: hsl(var(--pf));
+}
+
+.bg-primary-content {
+    background-color: hsl(var(--pc));
+}
+
+.bg-secondary {
+    background-color: hsl(var(--s));
+}
+
+.bg-secondary-focus {
+    background-color: hsl(var(--sf));
+}
+
+.bg-secondary-content {
+    background-color: hsl(var(--sc));
+}
+
+.bg-accent {
+    background-color: hsl(var(--a));
+}
+
+.bg-accent-focus {
+    background-color: hsl(var(--af));
+}
+
+.bg-accent-content {
+    background-color: hsl(var(--ac));
+}
+
+.bg-neutral {
+    background-color: hsl(var(--n));
+}
+
+.bg-neutral-focus {
+    background-color: hsl(var(--nf));
+}
+
+.bg-neutral-content {
+    background-color: hsl(var(--nc));
+}
+
+.bg-base-100 {
+    background-color: hsl(var(--b1));
+}
+
+.bg-base-200 {
+    background-color: hsl(var(--b2));
+}
+
+.bg-base-300 {
+    background-color: hsl(var(--b3));
+}
+
+.bg-base-content {
+    background-color: hsl(var(--bc));
+}
+
+.bg-info {
+    background-color: hsl(var(--in));
+}
+
+.bg-success {
+    background-color: hsl(var(--su));
+}
+
+.bg-warning {
+    background-color: hsl(var(--wa));
+}
+
+.bg-error {
+    background-color: hsl(var(--er));
+}

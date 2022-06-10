@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/liulihaocai/YetAnotherControlPanel/others"
 	"github.com/liulihaocai/YetAnotherControlPanel/panel/i18n"
 	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
@@ -37,14 +38,14 @@ func pageLogin(r *gin.Engine) {
 		tmpl := getBaseTemplate(ctx)
 		tmpl.New("login").Parse(util.Must(util.ReadFile(templatesFS, "templates/login.html")))
 
-		tmpl.Execute(ctx.Writer, struct {
+		util.StreamTemplateToUser(ctx, tmpl, struct {
 			Basic TemplateInput
 		}{
 			Basic: TemplateInput{
 				Title:  "Login",
 				Locale: i18n.ReadLocale(ctx),
 			},
-		})
+		}, others.TheConfig.CacheTemplate)
 		ctx.Abort()
 	})
 }

@@ -15,8 +15,9 @@ type Config struct {
 	TrustedHosts    []string `json:"trusted-hosts"`
 	Log             bool     `json:"log"`
 	SecuredEntrance string   `json:"secured-entrance"` // this can make users get away from password brute force attack
-	// CacheTemplate   bool     `json:"cache-template"`   // lower CPU usage, but higher memory usage
-	FailToBan struct {
+	CacheTemplate   bool     `json:"cache-template"`   // lower CPU usage, but higher memory usage
+	MinifyResources bool     `json:"minify-resources"` // minify resources, to reduce traffic
+	FailToBan       struct {
 		Enabled  bool `json:"enabled"`
 		Failures int  `json:"failures"`
 		BanTime  int  `json:"ban-time"` // in seconds
@@ -43,7 +44,8 @@ func makeConfig() *Config {
 	conf.TrustedHosts = []string{}
 	conf.Log = true
 	conf.SecuredEntrance = "" /* util.randomString(8) */
-	// conf.CacheTemplate = true
+	conf.CacheTemplate = true
+	conf.MinifyResources = false
 
 	conf.FailToBan.Enabled = true
 	conf.FailToBan.Failures = 5

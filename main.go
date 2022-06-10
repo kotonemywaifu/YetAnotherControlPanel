@@ -6,6 +6,7 @@ import (
 	"github.com/liulihaocai/YetAnotherControlPanel/others"
 	"github.com/liulihaocai/YetAnotherControlPanel/server"
 	"github.com/liulihaocai/YetAnotherControlPanel/task"
+	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 	}
 	log.Println("Initializing config...")
 	err = others.InitConfig()
+	util.InitializeMinifier()
 	if err != nil {
 		log.Panicln(err)
 	}

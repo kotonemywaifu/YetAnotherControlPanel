@@ -10,11 +10,11 @@ import (
 )
 
 type Account struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Session   string `json:"session"`    // session token should be changed every time user login/logout/change password
-	UserAgent string `json:"user_agent"` // anti cookie theft
-	MD5Hash   string `json:"-"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Session    string `json:"session"`     // session token should be changed every time user login/logout/change password
+	VerifyHash string `json:"verify-hash"` // anti cookie theft
+	MD5Hash    string `json:"-"`
 }
 
 var SESSION_TOKEN_LENGTH = 128
@@ -23,9 +23,9 @@ func (a *Account) UpdateHash() {
 	(*a).MD5Hash = util.GetMD5Hash(a.Username + a.Password)
 }
 
-func (a *Account) UpdateSession(userAgent string) {
+func (a *Account) UpdateSession(userAgent, ip string) {
 	(*a).Session = util.RandStringRunes(SESSION_TOKEN_LENGTH)
-	(*a).UserAgent = util.GetMD5Hash(userAgent)
+	(*a).VerifyHash = GetAccountVerifyHash(userAgent, ip)
 	SaveAccounts() // TODO: save slowly to reduce disk IO
 }
 
@@ -76,18 +76,35 @@ func FindAccountHash(hash string) *Account {
 	return nil
 }
 
-func CheckSession(session string, userAgent string) bool {
+func FindAccountSession(session string) *Account {
+	for i := 0; i < len(accounts); i++ {
+		if accounts[i].Session == session {
+			return &accounts[i]
+		}
+	}
+
+	return nil
+}
+
+func CheckSession(session, userAgent, ip string) bool {
 	if len(session) != SESSION_TOKEN_LENGTH {
 		return false
 	}
 
 	for i := 0; i < len(accounts); i++ {
 		if accounts[i].Session == session {
-			return accounts[i].UserAgent == util.GetMD5Hash(userAgent)
+			return accounts[i].VerifyHash == GetAccountVerifyHash(userAgent, ip)
 		}
 	}
 
 	return false
+}
+
+func GetAccountVerifyHash(userAgent, ip string) string {
+	if !TheConfig.LoginBindIP {
+		ip = ""
+	}
+	return util.GetMD5Hash(userAgent + ip)
 }
 
 func SaveAccounts() error {

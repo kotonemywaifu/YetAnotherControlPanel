@@ -42,6 +42,9 @@ type Theme struct {
 	Warning string `json:"warning"`
 	Error   string `json:"error"`
 
+	Background string `json:"background"`
+	FontFamily string `json:"font-family"`
+
 	RoundedBox      string `json:"rounded-box"`
 	RoundedButton   string `json:"rounded-button"`
 	RoundedBadge    string `json:"rounded-badge"`
@@ -144,6 +147,8 @@ func createThemeFile() {
 		Success:          "174 100% 29%",
 		Warning:          "36 100% 50%",
 		Error:            "14 100% 57%",
+		Background:       "hsl(var(--pc))",
+		FontFamily:       "Arial, Helvetica, sans-serif",
 		RoundedBox:       "1rem",
 		RoundedButton:    "0.5rem",
 		RoundedBadge:     "9999px",
@@ -191,7 +196,7 @@ func SaveThemes() error {
 func GetThemeSettings(c *gin.Context) *Theme {
 	ck, err := c.Cookie("theme")
 	if err != nil {
-		ck = "day"
+		ck = c.DefaultQuery("theme", "day")
 	}
 	if _, ok := Themes[ck]; ok {
 		return Themes[ck]

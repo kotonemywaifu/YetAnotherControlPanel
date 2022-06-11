@@ -42,6 +42,11 @@
     --focus-ring-offset: {{.FocusRingOffset}};
 }
 
+html, body {
+    font-family: {{.FontFamily}};
+    background: {{.Background}};
+}
+
 /* background color */
 
 .bg-primary {
@@ -122,4 +127,90 @@
 
 .bg-error {
     background-color: hsl(var(--er));
+}
+
+/* text color */
+
+.text-primary {
+    color: hsl(var(--p));
+}
+
+.text-primary-focus {
+    color: hsl(var(--pf));
+}
+
+.text-primary-content {
+    color: hsl(var(--pc));
+}
+
+.text-secondary {
+    color: hsl(var(--s));
+}
+
+.text-secondary-focus {
+    color: hsl(var(--sf));
+}
+
+.text-secondary-content {
+    color: hsl(var(--sc));
+}
+
+.text-accent {
+    color: hsl(var(--a));
+}
+
+.text-accent-focus {
+    color: hsl(var(--af));
+}
+
+.text-accent-content {
+    color: hsl(var(--ac));
+}
+
+.text-neutral {
+    color: hsl(var(--n));
+}
+
+.text-neutral-focus {
+    color: hsl(var(--nf));
+}
+
+.text-neutral-content {
+    color: hsl(var(--nc));
+}
+
+.text-base-100 {
+    color: hsl(var(--b1));
+}
+
+.text-base-200 {
+    color: hsl(var(--b2));
+}
+
+.text-base-300 {
+    color: hsl(var(--b3));
+}
+
+.text-base-content {
+    color: hsl(var(--bc));
+}
+
+.text-info {
+    color: hsl(var(--in));
+}
+
+.text-success {
+    color: hsl(var(--su));
+}
+
+.text-warning {
+    color: hsl(var(--wa));
+}
+
+.text-error {
+    color: hsl(var(--er));
+}
+
+.bold {
+    font-weight: bold;
 }

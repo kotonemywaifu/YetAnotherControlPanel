@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/liulihaocai/YetAnotherControlPanel/others"
 	"github.com/liulihaocai/YetAnotherControlPanel/util"
 )
 
@@ -54,13 +55,20 @@ func InitializeLibraries(r *gin.Engine) error {
 		DownloadUrl: "https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js",
 		VerifyMd5:   "8fb8fee4fcc3cc86ff6c724154c49c42",
 	}
-	libraryRegistry["tailwindcss"] = &Library{
-		Name:        "tailwindcss",
-		Type:        "css",
-		Version:     "2.2",
-		DownloadUrl: "https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css",
-		VerifyMd5:   "e35af4d8ceb624072098fa9a3d970aaa",
+	libraryRegistry["js-md5"] = &Library{
+		Name:        "js-md5",
+		Type:        "js",
+		Version:     "master",
+		DownloadUrl: "https://cdn.jsdelivr.net/gh/emn178/js-md5/build/md5.min.js",
+		VerifyMd5:   "",
 	}
+	// libraryRegistry["tailwindcss"] = &Library{
+	// 	Name:        "tailwindcss",
+	// 	Type:        "css",
+	// 	Version:     "2.2",
+	// 	DownloadUrl: "https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css",
+	// 	VerifyMd5:   "e35af4d8ceb624072098fa9a3d970aaa",
+	// }
 
 	// download libraries
 	libraryHeader = ""
@@ -77,7 +85,7 @@ func InitializeLibraries(r *gin.Engine) error {
 			libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/library/" + libn + "\"/>"
 		}
 	}
-	libraryHeader += "<link rel=\"stylesheet\" href=\"/assets/theme.css\" />"
+	libraryHeader += "<script src=\"/assets/common.js?ver=" + others.PanelVersion + "\"></script>"
 
 	// add routes
 	r.Static("/assets/library", LibraryDir)
@@ -131,5 +139,12 @@ func tryPushLibrary(c *gin.Context) string {
 	// 	if err := pusher.Push("", nil)
 	// }
 	// TODO: implement
-	return libraryHeader
+	lh := libraryHeader
+	ck, err := c.Cookie("theme")
+	if err != nil {
+		ck = "day"
+	}
+	// make sure theme is right one, and don't make browser load the wrong one
+	lh += "<link rel=\"stylesheet\" href=\"/assets/theme.css?theme=" + ck + "&ver=" + others.PanelVersion + "\" />"
+	return lh
 }

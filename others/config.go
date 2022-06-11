@@ -17,6 +17,7 @@ type Config struct {
 	SecuredEntrance string   `json:"secured-entrance"` // this can make users get away from password brute force attack
 	CacheTemplate   bool     `json:"cache-template"`   // lower CPU usage, but higher memory usage
 	MinifyResources bool     `json:"minify-resources"` // minify resources, to reduce traffic
+	LoginBindIP     bool     `json:"login-bind-ip"`    // expire session when IP changed
 	FailToBan       struct {
 		Enabled  bool `json:"enabled"`
 		Failures int  `json:"failures"`
@@ -35,6 +36,7 @@ type Config struct {
 
 var ConfigDir string
 var TheConfig *Config
+var PanelVersion string = "0.0.1"
 
 func makeConfig() *Config {
 	conf := new(Config)
@@ -46,6 +48,7 @@ func makeConfig() *Config {
 	conf.SecuredEntrance = "" /* util.randomString(8) */
 	conf.CacheTemplate = true
 	conf.MinifyResources = false
+	conf.LoginBindIP = false // enable this when super security is needed
 
 	conf.FailToBan.Enabled = true
 	conf.FailToBan.Failures = 5

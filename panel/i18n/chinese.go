@@ -10,5 +10,10 @@ func loadChinese() *Locale {
 	locale.Api.Login.InvalidAccountHash = "無效的帳號哈希"
 	locale.Api.Login.InvalidAccountCredentials = "無效的帳號或密碼"
 
+	// page.login
+	locale.Page.Login.UsernameField = "帳號"
+	locale.Page.Login.PasswordField = "密碼"
+	locale.Page.Login.LoginButton = "登入"
+
 	return locale
 }

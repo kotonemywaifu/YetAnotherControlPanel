@@ -15,6 +15,13 @@ type Locale struct {
 			InvalidAccountCredentials string
 		}
 	}
+	Page struct {
+		Login struct {
+			UsernameField string
+			PasswordField string
+			LoginButton   string
+		}
+	}
 }
 
 var locales map[string]*Locale = make(map[string]*Locale)

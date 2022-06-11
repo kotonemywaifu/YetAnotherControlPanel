@@ -54,7 +54,7 @@ func Login(group *gin.RouterGroup, cfg *others.Config) {
 		}
 
 		// correct password, set session cookie
-		account.UpdateSession(c.Request.UserAgent())
+		account.UpdateSession(c.Request.UserAgent(), c.ClientIP())
 		c.SetCookie("session", account.Session, 3600, "/", "", false, true)
 		c.JSON(200, gin.H{
 			"status": "ok",

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -25,6 +26,19 @@ func RegisterWebPages(r *gin.Engine) error {
 	log.Println("Registering web pages...")
 	pageLogin(r)
 
+	r.GET("/assets/common.js", func(ctx *gin.Context) {
+		f, err := templatesFS.Open("templates/common.js")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+		res, err := ioutil.ReadAll(f)
+		if err != nil {
+			panic(err)
+		}
+		ctx.Writer.Write(res)
+	})
+
 	r.NoRoute(func(ctx *gin.Context) {
 		// TODO: replace this with a real 404 page
 		ctx.String(http.StatusNotFound, "404 Not Found")
@@ -45,7 +59,7 @@ func pageLogin(r *gin.Engine) {
 				Title:  "Login",
 				Locale: i18n.ReadLocale(ctx),
 			},
-		}, others.TheConfig.CacheTemplate)
+		}, others.TheConfig.MinifyResources)
 		ctx.Abort()
 	})
 }

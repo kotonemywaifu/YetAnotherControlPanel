@@ -1,10 +1,68 @@
 {{define "content"}}
-{{.Basic.Title}}</br>
-{{.Basic.Locale.Api.Login.InvalidAccountCredentials}}
-<button onclick="login()" class="bg-primary">Login</button>
+<style>
+    .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: auto;
+        width: auto;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+
+    .login-box {
+        border: 1px;
+        border-radius: 0.5rem;
+        border-style: solid;
+        border-color: hsl(var(--p));
+    }
+
+    .login-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .title-text {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+</style>
+<div class="center">
+    <div class="login-box">
+        <div class="login-container">
+            <p class="title-text">
+                <font class="bold">Y</font>et<font class="bold">A</font>nother<font class="bold">C</font>ontrol<font
+                    class="bold">P</font>anel
+            </p>
+
+            <div>
+                <p><input type="text" id="login-user" placeholder="{{.Basic.Locale.Page.Login.UsernameField}}"></p>
+                <p><input type="password" id="login-pwd" placeholder="{{.Basic.Locale.Page.Login.PasswordField}}"></p>
+                <p><button onclick="submitLogin()">{{.Basic.Locale.Page.Login.LoginButton}}</button></p>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    let login = () => {
-        alert("Login");
-    };
+    function submitLogin() {
+        var user = document.getElementById("login-user").value;
+        var pwd = document.getElementById("login-pwd").value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/login", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText)
+                if (json.status == "ok") {
+                    window.location.href = "/";
+                } else {
+                    alert(json.msg);
+                }
+            }
+        };
+        xhr.send("account=" + md5(user + pwd));
+    }
 </script>
 {{end}}

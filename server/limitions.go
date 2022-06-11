@@ -40,7 +40,7 @@ func limitLoginAndEntrance(r *gin.Engine, conf *others.Config) gin.HandlerFunc {
 			session = cookie.Value
 		}
 
-		if !others.CheckSession(session, c.Request.UserAgent()) {
+		if !others.CheckSession(session, c.Request.UserAgent(), c.ClientIP()) {
 			if session != "" {
 				// session token is invalid, remove it
 				c.SetCookie("session", "", -1, "/", "", false, true)

@@ -214,3 +214,40 @@ html, body {
 .bold {
     font-weight: bold;
 }
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+.input {
+    flex-shrink: 1;
+    transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+    transition-duration: var(--animation-input);
+    -webkit-transition: var(--animation-input);
+    transition: var(--animation-input);
+    transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+    height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    line-height: 2;
+    border: 1px solid hsl(var(--bc));
+    background-color: hsl(var(--b1));
+    color: hsl(var(--bc));
+    border-radius: var(--rounded-btn, .5rem);
+    outline: none;
+}
+
+.input:focus {
+    border: 1px solid hsl(var(--p));
+}

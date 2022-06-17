@@ -36,6 +36,14 @@ func RegisterWebPages(r *gin.Engine) error {
 		if err != nil {
 			panic(err)
 		}
+		if others.TheConfig.MinifyResources {
+			scr := string(res)
+			scr, err = util.MinifyJs(scr)
+			if err != nil {
+				panic(err)
+			}
+			res = []byte(scr)
+		}
 		ctx.Writer.Write(res)
 	})
 

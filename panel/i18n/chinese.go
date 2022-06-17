@@ -1,9 +1,8 @@
 package i18n
 
 func loadChinese() *Locale {
-	locale := &Locale{
-		Lang: "中文",
-	}
+	locale := loadEnglish() // use English as the base
+	locale.Lang = "中文"
 
 	// api.login
 	locale.Api.Login.FailedTooManyTimes = "登入失敗，請稍後再試"

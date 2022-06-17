@@ -19,6 +19,7 @@ type Library struct {
 	DownloadUrl string
 	VerifyMd5   string
 	File        string // generated dynamically
+	GlobalLoad  bool   // whether to load library globally
 }
 
 var LibraryDir string
@@ -47,6 +48,7 @@ func InitializeLibraries(r *gin.Engine) error {
 		Version:     "11.4.17",
 		DownloadUrl: "https://cdn.jsdelivr.net/npm/sweetalert2@11.4.17/dist/sweetalert2.all.min.js",
 		VerifyMd5:   "eeda8bbd18f70c496ab3c2d29667d1fe",
+		GlobalLoad:  true,
 	}
 	libraryRegistry["jquery"] = &Library{
 		Name:        "jquery",
@@ -54,6 +56,7 @@ func InitializeLibraries(r *gin.Engine) error {
 		Version:     "3.6.0",
 		DownloadUrl: "https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js",
 		VerifyMd5:   "8fb8fee4fcc3cc86ff6c724154c49c42",
+		GlobalLoad:  true,
 	}
 	libraryRegistry["js-md5"] = &Library{
 		Name:        "js-md5",
@@ -61,6 +64,7 @@ func InitializeLibraries(r *gin.Engine) error {
 		Version:     "master",
 		DownloadUrl: "https://cdn.jsdelivr.net/gh/emn178/js-md5/build/md5.min.js",
 		VerifyMd5:   "",
+		GlobalLoad:  false,
 	}
 	// libraryRegistry["tailwindcss"] = &Library{
 	// 	Name:        "tailwindcss",

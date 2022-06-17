@@ -147,7 +147,7 @@ func createThemeFile() {
 		Success:          "174 100% 29%",
 		Warning:          "36 100% 50%",
 		Error:            "14 100% 57%",
-		Background:       "hsl(var(--pc))",
+		Background:       "hsl(var(--b1))",
 		FontFamily:       "Arial, Helvetica, sans-serif",
 		RoundedBox:       "1rem",
 		RoundedButton:    "0.5rem",

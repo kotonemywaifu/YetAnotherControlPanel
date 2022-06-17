@@ -7,4 +7,5 @@ import (
 
 func RegisterApi(group *gin.RouterGroup, cfg *others.Config) {
 	Login(group, cfg)
+	Logout(group)
 }

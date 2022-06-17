@@ -13,7 +13,7 @@
 
     .login-box {
         border: 1px;
-        border-radius: 0.5rem;
+        border-radius: var(--rounded-btn, .5rem);
         border-style: solid;
         border-color: hsl(var(--p));
     }
@@ -29,17 +29,18 @@
         font-size: 1.5rem;
     }
 </style>
+<script src=/assets/library/js-md5-master.js></script>
 <div class="center">
     <div class="login-box">
         <div class="login-container">
-            <p class="title-text">
+            <p class="title-text text-base-content">
                 <font class="bold">Y</font>et<font class="bold">A</font>nother<font class="bold">C</font>ontrol<font
                     class="bold">P</font>anel
             </p>
 
             <div>
-                <p><input type="text" id="login-user" placeholder="{{.Basic.Locale.Page.Login.UsernameField}}"></p>
-                <p><input type="password" id="login-pwd" placeholder="{{.Basic.Locale.Page.Login.PasswordField}}"></p>
+                <p><input type="text" id="login-user" placeholder="{{.Basic.Locale.Page.Login.UsernameField}}" class="input"></p>
+                <p><input type="password" id="login-pwd" placeholder="{{.Basic.Locale.Page.Login.PasswordField}}" class="input"></p>
                 <p><button onclick="submitLogin()">{{.Basic.Locale.Page.Login.LoginButton}}</button></p>
             </div>
         </div>
